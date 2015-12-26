@@ -1,0 +1,15 @@
+{
+  "name": "jsjs",
+  "version": "1.0.0",
+  "description": "Exercises to learn javascript exploring freely.",
+  "main": "index.js",
+  "scripts": {
+    "test": "test",
+	"generators": "node --harmony-destructuring ./1.generators.js"
+  },
+  "author": "fpinzn",
+  "license": "ISC",
+  "dependencies": {
+    "tape": "^4.3.0"
+  }
+}
