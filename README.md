@@ -19,7 +19,18 @@ Llamar un generador no ejecuta su código inmediatamente, en vez devuelve un ite
 Cada vez que se llama el método `next` del iterador se ejecuta la función hasta que encuentra el próximo `yield`.
 
 
+Examples of:
 
-## 2. Spread operator
+1. The most basic generator
+2. Natural numbers without a loop _Incorrect Hypothesis_
+3. Natural numbers
+4. Range function implementation
+5. Destructuring
+6. Implement a once function
 
-## 3. Rest arguments
+## 2. Vinyl
+
+
+## . Spread operator [Requires EC2015]
+
+## . Rest arguments [Requires EC2015]
