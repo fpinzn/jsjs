@@ -3,13 +3,21 @@
   "version": "1.0.0",
   "description": "Exercises to learn javascript exploring freely.",
   "main": "index.js",
+  "repository": "https://github.com/fpinzn/jsjs",
   "scripts": {
     "test": "test",
-	"generators": "node --harmony-destructuring ./1.generators.js"
+    "generators": "node --harmony-destructuring ./1.generators.js",
+    "vinyl-fs": "mocha 2.1.vinyl-fs.js"
   },
   "author": "fpinzn",
   "license": "ISC",
   "dependencies": {
-    "tape": "^4.3.0"
+    "del": "^2.2.0",
+    "mocha": "^2.3.4",
+    "split": "^1.0.0",
+    "tape": "^4.3.0",
+    "through2": "^2.0.0",
+    "vinyl": "^1.1.0",
+    "vinyl-fs": "^2.2.1"
   }
 }
