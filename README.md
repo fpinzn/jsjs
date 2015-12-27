@@ -62,17 +62,29 @@ Examples of:
 - [x] difference in end event timestamps from src and dest streams _The difference is invisible using console.time (a millisecond measure) and must be measured using `process.hrtime()`. The difference is about 1M ns which is about 1ms_
 
 - [x] using the passthrough argument in `src` _This allow to mingle different streams of origin into one dest, think lib and vendor_
+- [x] concatenate all the files
+	- [x] using a Buffer.toString() cast
+	- [x] simply pipin'
 - [ ] copying the first line of each file to a new file
 - [ ] concat all files with the same extension using a single glob
-- [ ] autoindex a markdown file 
+- [ ] autoindex a markdown file
 - [ ] use the since option on the src
 
 ## Streams
+Got here from the vinyl exercises.
 
 ReadableStreams have an `end` event, while WriteableStreams have a `finish` event.
 
+__Stream inside a stream__ Vinyl src produces a stream of vinyl files, and each can be opened using
+`fs.createWriteStream` to get a stream of its contents.
+
+`fs.createWriteStream` produces by default a file descriptor with `w` mode, if you wish to append content instead of replace it use `fs.createWriteStream({flags: 'a'})`
+
+Notice it also allows random write access to the file via the `start` flag.
+
 ### Duplexify
 https://github.com/mafintosh/duplexify
+Got here from the vinyl exercises.
 
 ## . Spread operator [Requires EC2015]
 

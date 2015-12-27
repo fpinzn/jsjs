@@ -8,6 +8,8 @@ var split = require('split')
 var util = require('util')
 var through = require('through2')
 var File = require('vinyl')
+var observableDiff = require('deep-diff').diff
+var cloneDeep = require('lodash').cloneDeep
 
 require('mocha')
 
@@ -75,38 +77,36 @@ describe('vinyl-fs', function () {
 
 	})
 
-	it('copying the first line of each file to a new file', function (done) {
-		let readStream = vfs.src('./fixtures/*.md')
-		let writeStream = fs.createWriteStream('./temp/lineSplitter.md')
+	describe('concatenate all the files', function (done) {
+		//if declared inside the beforeEach block wouldnt be accessible outside.
+		let readStream, writeStream
 
-
-		readStream.on('data', function (file) {
-		// 	console.log(File.isVinyl(file))
-		//
-		// 	// // console.log(file.contents)
-			file.pipe(split())
-			.on('data', function(line){
-				// writeStream.push('lol')
-				console.log('lol',line)
-		// 		writeStream.write(line)
-			})
-		// 	// util.inspect(chunk)
+		beforeEach(function (done) {
+			readStream = vfs.src('./fixtures/*.md')
+			writeStream = fs.createWriteStream('./temp/lineSplitter.md')
+			done()
 		})
 
-		// //this works
-		// let manualReadStream = fs.createReadStream('./fixtures/src.md')
-		// manualReadStream.pipe(split()).on('data', function(line) {
-		// 	console.log(line)
-		// })
-		// fs.createReadStream('./fixtures/src.md')
-	    //   .pipe(split())
-	    //   .on('data', function (line) {
-	    //     console.log(line)
-	    //   })
+		it('using a Buffer.toString() cast', function (done) {
+			readStream.on('data', function (file) {
+				writeStream.write(file.contents.toString())
+			})
+			.on('finish', function() { done() })
+		})
 
-
+		it('simply pipin\'', function (done) {
+			readStream.on('data', function (file) {
+				file.pipe(writeStream)
+				.on('close', function () {
+					// the first time writeStream is defined as in the beforeEach block ('w' access flag)
+					// the following times is defined with 'r+' (append access)
+					writeStream = fs.createWriteStream('./temp/lineSplitter.md', {flags: 'a'})
+				})
+			}).on('finish', function () { done() })
+		})
 
 	})
 })
 
+// it('copying the first line of each file to a new file', function (done) {
 // it('cocat all files with the same extension')

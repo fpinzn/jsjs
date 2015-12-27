@@ -12,7 +12,9 @@
   "author": "fpinzn",
   "license": "ISC",
   "dependencies": {
+    "deep-diff": "^0.3.3",
     "del": "^2.2.0",
+    "lodash": "^3.10.1",
     "mocha": "^2.3.4",
     "split": "^1.0.0",
     "tape": "^4.3.0",
