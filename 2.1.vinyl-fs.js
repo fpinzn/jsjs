@@ -1,21 +1,21 @@
 'use strict'
 
 var vfs = require('vinyl-fs')
-var fs = require('fs')
-var assert = require('assert')
-var del = require('del')
-var split = require('split')
-var util = require('util')
-var through = require('through2')
-var File = require('vinyl')
-var observableDiff = require('deep-diff').diff
-var cloneDeep = require('lodash').cloneDeep
+	, fs = require('fs')
+	, assert = require('assert')
+	, del = require('del')
+	, util = require('util')
+	, through = require('through2')
+	, File = require('vinyl')
+	, observableDiff = require('deep-diff').diff
+	, cloneDeep = require('lodash').cloneDeep
+	, tap = require('tap-stream')
 
 require('mocha')
 
 describe('vinyl-fs', function () {
 
-	beforeEach(function (done) {
+	before(function (done) {
 		del('./temp/*').then(function () {
 			done()
 		})
@@ -24,9 +24,9 @@ describe('vinyl-fs', function () {
 	it('simply copying a file', function (done) {
 
 		let stream = vfs.src('./fixtures/src.md')
-		stream.pipe(vfs.dest('./temp'))
+		stream.pipe(vfs.dest('./temp/simple'))
 		.on('finish', function () {
-			assert(fs.statSync('./temp/src.md').isFile())
+			assert(fs.statSync('./temp/simple/src.md').isFile())
 			done()
 		})
 	})
@@ -48,7 +48,7 @@ describe('vinyl-fs', function () {
 			console.log('end: ', endTime[0]===startTime[0] ? endTime[1] - startTime[1] + 'ns': 'changed second')
 			dd.next().value()
 		})
-		.pipe(vfs.dest('./temp/'))
+		.pipe(vfs.dest('./temp/timestamp'))
 		.on('finish', function () {
 			let endTime = process.hrtime()
 			console.log('finish: ', endTime[0]===startTime[0] ? endTime[1] - startTime[1] + 'ns': 'changed second')
@@ -68,10 +68,10 @@ describe('vinyl-fs', function () {
 		let originalStream = vfs.src('./fixtures/src.md')
 		let secondaryStream = vfs.src('./fixtures/src2.md', {passthrough: true})
 
-		originalStream.pipe(secondaryStream).pipe(vfs.dest('./temp')
+		originalStream.pipe(secondaryStream).pipe(vfs.dest('./temp/pasthrough')
 		.on('finish', function() {
-			assert(fs.statSync('./temp/src.md').isFile())
-			assert(fs.statSync('./temp/src2.md').isFile())
+			assert(fs.statSync('./temp/pasthrough/src.md').isFile())
+			assert(fs.statSync('./temp/pasthrough/src2.md').isFile())
 			done()
 		}))
 
@@ -83,7 +83,7 @@ describe('vinyl-fs', function () {
 
 		beforeEach(function (done) {
 			readStream = vfs.src('./fixtures/*.md')
-			writeStream = fs.createWriteStream('./temp/lineSplitter.md')
+			writeStream = fs.createWriteStream('./temp/concat.md')
 			done()
 		})
 
@@ -96,17 +96,35 @@ describe('vinyl-fs', function () {
 
 		it('simply pipin\'', function (done) {
 			readStream.on('data', function (file) {
+				writeStream = fs.createWriteStream('./temp/concat.md', {flags: 'a'})
 				file.pipe(writeStream)
-				.on('close', function () {
-					// the first time writeStream is defined as in the beforeEach block ('w' access flag)
-					// the following times is defined with 'r+' (append access)
-					writeStream = fs.createWriteStream('./temp/lineSplitter.md', {flags: 'a'})
-				})
-			}).on('finish', function () { done() })
+			}).on('finish', function () {
+				done()
+			})
 		})
 
 	})
+
+	describe ('copying the first line of each file to a new file using split', function (done) {
+		let readStream, writeStream
+
+		beforeEach(function (done) {
+			readStream = vfs.src('./fixtures/*.md')
+			writeStream = fs.createWriteStream('./temp/firstLiner.md')
+			done()
+		})
+
+		it('split by hand', function (done) {
+
+			readStream.on('data', function(file) {
+				file.pipe(through(function (chunk, enc, cb) {
+					this.push(chunk.toString().split('\n')[0] + '\n')
+				})).pipe(writeStream)
+			}).on('finish', function () { done() })
+
+		})
+	})
+
 })
 
-// it('copying the first line of each file to a new file', function (done) {
 // it('cocat all files with the same extension')

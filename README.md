@@ -65,13 +65,19 @@ Examples of:
 - [x] concatenate all the files
 	- [x] using a Buffer.toString() cast
 	- [x] simply pipin'
-- [ ] copying the first line of each file to a new file
+- [x] copying the first line of each file to a new file
 - [ ] concat all files with the same extension using a single glob
 - [ ] autoindex a markdown file
 - [ ] use the since option on the src
 
 ## Streams
 Got here from the vinyl exercises.
+
+```coffeescript
+	vinylStream.onData (file) ->
+		file.pipe split()
+```
+### file system
 
 ReadableStreams have an `end` event, while WriteableStreams have a `finish` event.
 
@@ -81,6 +87,10 @@ __Stream inside a stream__ Vinyl src produces a stream of vinyl files, and each 
 `fs.createWriteStream` produces by default a file descriptor with `w` mode, if you wish to append content instead of replace it use `fs.createWriteStream({flags: 'a'})`
 
 Notice it also allows random write access to the file via the `start` flag.
+
+Streams are abstract interfaces. They can be writeable, readable or both.
+
+
 
 ### Duplexify
 https://github.com/mafintosh/duplexify
