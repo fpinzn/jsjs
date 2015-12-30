@@ -70,6 +70,16 @@ Examples of:
 - [ ] autoindex a markdown file
 - [ ] use the since option on the src
 
+#What's the difference between vinyl-fs and vinyl-source-stream
+
+Whats the difference in the output stream in both? None.
+
+The thing is vfs.dest expects a stream of Vinyl Files.
+
+Vinyl Source Stream takes a String Stream and turns it into a single Vinyl File which can be piped to the vfs.dest
+
+For example the browserify output can't be passed directly yo vfs.dest because is a string stream.
+
 ## Streams
 Got here from the vinyl exercises.
 

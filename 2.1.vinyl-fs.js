@@ -1,5 +1,6 @@
 'use strict'
 
+require('mocha')
 var vfs = require('vinyl-fs')
 	, fs = require('fs')
 	, assert = require('assert')
@@ -10,8 +11,9 @@ var vfs = require('vinyl-fs')
 	, observableDiff = require('deep-diff').diff
 	, cloneDeep = require('lodash').cloneDeep
 	, tap = require('tap-stream')
+	, vss =  require('vinyl-source-stream')
+	, browserify = require('browserify')
 
-require('mocha')
 
 describe('vinyl-fs', function () {
 
@@ -120,9 +122,18 @@ describe('vinyl-fs', function () {
 				file.pipe(through(function (chunk, enc, cb) {
 					this.push(chunk.toString().split('\n')[0] + '\n')
 				})).pipe(writeStream)
-			}).on('finish', function () { done() })
+			}).on('end', function () { done() })
 
 		})
+	})
+
+	describe ('whats the difference between vinyl-source-stream and vinyl-fs source?' , function (done) {
+
+		let vinylSourceStream = vss('pre.vss.bundled.js')
+
+		browserify('./fixtures/index.js').bundle().pipe(vinylSourceStream).pipe(vfs.dest('temp/vss'))
+		// this doesnt work
+		//browserify('./fixtures/index.js').bundle().pipe(vfs.dest('temp/vfs'))
 	})
 
 })
